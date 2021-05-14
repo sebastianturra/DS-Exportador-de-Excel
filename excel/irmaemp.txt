@@ -1,0 +1,17 @@
+﻿CREATE TABLE `excel_prueba` (
+  `epru_di` int(11) NOT NULL,
+  `epru_nom` varchar(250) NOT NULL,
+  `epru_fecnac` date NOT NULL,
+  `epru_ejval` int(11) NOT NULL,
+  `epru_numfav` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `excel_prueba`
+--
+
+INSERT INTO `excel_prueba` (`epru_di`, `epru_nom`, `epru_fecnac`, `epru_ejval`, `epru_numfav`) VALUES
+(1, 'Luis', '0000-00-00', 1, 58),
+(1, 'carlos', '2021-05-14', 1, 89);
+COMMIT;
+
