@@ -77,7 +77,7 @@ for ($i=2;$i<=$filas;$i++){
                   , `epru_numfolio`) VALUES ";
                   $sql.="('".$_DATOS_EXCEL[$i]['epru_id']."','";
                   $sql.=$_DATOS_EXCEL[$i]['epru_nom']."','";
-                  $sql.=$_DATOS_EXCEL[$i]['epru_fecnac'].")";  //ACA ESTÁ EL
+                  $sql.=$_DATOS_EXCEL[$i]['epru_fecnac'].")";  //ACA ESTÁ EL codigo
         }
   
                         echo $sql;
