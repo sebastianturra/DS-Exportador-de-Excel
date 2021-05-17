@@ -53,7 +53,7 @@ class PHPExcel_Cell_DefaultValueBinder implements PHPExcel_Cell_IValueBinder
             if ($value instanceof DateTime) {
                 $value = $value->format('Y-m-d H:i:s');
             } elseif (!($value instanceof PHPExcel_RichText)) {
-                $value = (string) $value;
+                $value = (string) $value;   
             }
         }
 
@@ -79,7 +79,7 @@ class PHPExcel_Cell_DefaultValueBinder implements PHPExcel_Cell_IValueBinder
             return PHPExcel_Cell_DataType::TYPE_STRING;
         } elseif ($pValue instanceof PHPExcel_RichText) {
             return PHPExcel_Cell_DataType::TYPE_INLINE;
-        } elseif ($pValue{0} === '=' && strlen($pValue) > 1) {
+        } elseif (0 === strpos($pValue, '=') && strlen($pValue) > 1) {
             return PHPExcel_Cell_DataType::TYPE_FORMULA;
         } elseif (is_bool($pValue)) {
             return PHPExcel_Cell_DataType::TYPE_BOOL;
