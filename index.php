@@ -53,21 +53,22 @@ $columnas = $objPHPExcel->setActiveSheetIndex(0)->getHighestColumn();
 $filas = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
 
 //Creamos un array con todos los datos del Excel importado
+$a=0;
 for ($i=2;$i<=$filas;$i++){
-                        $_DATOS_EXCEL[$i]['epru_id'] = $objPHPExcel->getActiveSheet()->getCell('A'.$i)->getCalculatedValue();
-                        $_DATOS_EXCEL[$i]['epru_nom'] = $objPHPExcel->getActiveSheet()->getCell('B'.$i)->getCalculatedValue();
-                        $_DATOS_EXCEL[$i]['epru_fecnac']= date('Y-m-d',PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell('C'.$i)->getCalculatedValue()));
-                        $_DATOS_EXCEL[$i]['epru_numfav'] = $objPHPExcel->getActiveSheet()->getCell('D'.$i)->getCalculatedValue();
-                        $_DATOS_EXCEL[$i]['epru_numfolio'] = $objPHPExcel->getActiveSheet()->getCell('E'.$i)->getCalculatedValue();
+                        $_DATOS_EXCEL[$a]['epru_id'] = $objPHPExcel->getActiveSheet()->getCell('A'.$i)->getCalculatedValue();
+                        $_DATOS_EXCEL[$a]['epru_nom'] = $objPHPExcel->getActiveSheet()->getCell('B'.$i)->getCalculatedValue();
+                        $_DATOS_EXCEL[$a]['epru_fecnac']= date('Y-m-d',PHPExcel_Shared_Date::ExcelToPHP($objPHPExcel->getActiveSheet()->getCell('C'.$i)->getCalculatedValue()));
+                        $_DATOS_EXCEL[$a]['epru_numfav'] = $objPHPExcel->getActiveSheet()->getCell('D'.$i)->getCalculatedValue();
+                        $_DATOS_EXCEL[$a]['epru_numfolio'] = $objPHPExcel->getActiveSheet()->getCell('E'.$i)->getCalculatedValue();
 
-                        $nombrepdf="FACT_".$_DATOS_EXCEL[$i]['epru_numfolio'].$_DATOS_EXCEL[$i]['epru_fecnac'].".pdf";
+                        $nombrepdf="FACT_".$_DATOS_EXCEL[$a]['epru_numfolio'].$_DATOS_EXCEL[$a]['epru_fecnac'].".pdf";
                         echo $nombrepdf;
-
+                        $a++;
                     }       
                     $errores=0;
 
                    // var_dump($_DATOS_EXCEL);
-        for($i=2; $i< count($_DATOS_EXCEL); $i++){
+        for($i=0; $i< count($_DATOS_EXCEL); $i++){
                   $sql = "INSERT INTO `excelprueba`(
                     `epru_id`
                   , `epru_nom`
@@ -78,18 +79,21 @@ for ($i=2;$i<=$filas;$i++){
                   $sql.="('".$_DATOS_EXCEL[$i]['epru_id']."','";
                   $sql.=$_DATOS_EXCEL[$i]['epru_nom']."','";
                   $sql.=$_DATOS_EXCEL[$i]['epru_fecnac'].")";  //ACA ESTÁ EL codigo
+
+                  echo $sql;
         }
   
-                        echo $sql;
+                        
                         //$result = $enlace->query($sql);
                        // if (!$result){ echo "Error al insertar registro ".$campo;$errores+=1;}
                    
                     /////////////////////////////////////////////////////////////////////////   
-echo "<hr> <div class='col-xs-12'>
+/*
+                    echo "<hr> <div class='col-xs-12'>
         <div class='form-group'>
           <strong><center>ARCHIVO IMPORTADO CON EXITO, EN TOTAL $campo REGISTROS Y $errores ERRORES</center></strong>
 </div>
-</div>  ";
+</div>  ";  */
                             //Borramos el archivo que esta en el servidor con el prefijo cop_
                     unlink($destino);
                     
