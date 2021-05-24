@@ -1,13 +1,12 @@
 <?php
-include_once('Modelo/Conexion.php');
 include_once('Modelo/Excelcarga.php');
 
 $excelcarga = new excelcarga();
 
 $lastvalue = $excelcarga->getlastvalue();
-
+    
 //SE CONECTA LA BASE DE DATOS
-$enlace = mysqli_connect("localhost", "root", "", "irmaemp");
+$enlace = mysqli_connect("pdb44.awardspace.net", "3217706_db", "K2+pachun", "3217706_db");
 
 if (!$enlace) {
   echo "<div display='none'>
@@ -61,8 +60,8 @@ else echo "<br>Error Al Cargar el Archivo<br>";
         
 if (file_exists ("cop_".$archivo)){ 
 // Llamamos las clases necesarias PHPEcel 
-require_once('phpexcel/Classes/PHPExcel.php');
-require_once('phpexcel/Classes/PHPExcel/Reader/Excel2007.php');                  
+require_once('../../../lib/PHPExcel-1.8/phpexcel/Classes/PHPExcel.php');
+require_once('../../../lib/PHPExcel-1.8/phpexcel/Classes/PHPExcel/Reader/Excel2007.php');                  
 // Cargando la hoja de excel
 $objReader = new PHPExcel_Reader_Excel2007();
 $objPHPExcel = $objReader->load("cop_".$archivo);
@@ -92,7 +91,7 @@ for ($i=2;$i<=$filas;$i++){
                         $_DATOS_EXCEL[$a]['ARCHF_NOMBRE'] = "FACT_".$_DATOS_EXCEL[$a]['FACT_CODIGO'].$_DATOS_EXCEL[$a]['FACT_FECHAING'].".pdf";
                         $_DATOS_EXCEL[$a]['ARCHF_USERNOM'] = "";
                         $_DATOS_EXCEL[$a]['ARCHF_FECHASUBIDA'] = $_DATOS_EXCEL[$a]['FACT_FECHAING'];
-                        echo "<br>".$_DATOS_EXCEL[$a]['ARCHF_NOMBRE']."<br>";
+                        //echo "<br>".$_DATOS_EXCEL[$a]['ARCHF_NOMBRE']."<br>";
 //FECHA DE VENCIMIENTO   
                         $_DATOS_EXCEL[$a]['FECHA_PAGO_VENCIMIENTO']= date("Y-m-d", strtotime($_DATOS_EXCEL[$a]['FACT_FECHAING']."+ 1 month"));
                         ////////////////////////////////////////////////////////////////////////////
@@ -106,8 +105,8 @@ for ($i=2;$i<=$filas;$i++){
                         $_DATOS_EXCEL[$a]['FACT_LUGAR'] = '-';
                         $_DATOS_EXCEL[$a]['FACT_NOMBRERS']= $objPHPExcel->getActiveSheet()->getCell('E'.$i)->getCalculatedValue();
                         $_DATOS_EXCEL[$a]['FACT_EMIREC'] = 'EMITIDA';
-                        $_DATOS_EXCEL[$a]['FACT_CONTACTO'] = '-';
-                        $_DATOS_EXCEL[$a]['FACT_CORREO'] = '-';
+                        $_DATOS_EXCEL[$a]['FACT_CONTACTO'] = 'A';
+                        $_DATOS_EXCEL[$a]['FACT_CORREO'] = 'A@A';
                         $_DATOS_EXCEL[$a]['FACT_FONO'] = '0';
                         $_DATOS_EXCEL[$a]['FACT_FVENC']= $_DATOS_EXCEL[$a]['FECHA_PAGO_VENCIMIENTO'];
                         $_DATOS_EXCEL[$a]['FACT_FPAG'] = $_DATOS_EXCEL[$a]['FECHA_PAGO_VENCIMIENTO'];
@@ -122,7 +121,7 @@ for ($i=2;$i<=$filas;$i++){
 
 //VARIABLE DE CAMPO                   
         $campo=0;     
-
+        $totales=0;
 //SE CREAN LAS SENTENCIAS SQL DE SUBIDA DE FACTURAS.
         for($i=0; $i< count($_DATOS_EXCEL); $i++){
           $ingfac = "INSERT INTO `facturacion`(
@@ -175,9 +174,9 @@ for ($i=2;$i<=$filas;$i++){
                   $ingfac.=$_DATOS_EXCEL[$i]['FACT_FORMPAG']."','";
                   $ingfac.=$_DATOS_EXCEL[$i]['FACT_COBRANZA']."')";
 
-                  echo "<br>".$ingfac."<br>";
+              //    echo "<br>".$ingfac."<br>";
                       
-             $result = $enlace->query($ingfac);
+              $result = $enlace->query($ingfac);
              if (!$result){ echo "<br>Error al insertar registro factura<br>".$campo;$errores+=1;}  
           }   
 
@@ -195,19 +194,19 @@ for($i=0; $i< count($_DATOS_EXCEL); $i++){
           $ingarcfac.=$_DATOS_EXCEL[$i]['ARCHF_USERNOM']."','";
           $ingarcfac.=$_DATOS_EXCEL[$i]['ARCHF_FECHASUBIDA']."')";
 
-          echo "<br>".$ingarcfac."<br>";
+         // echo "<br>".$ingarcfac."<br>";
               
      $result = $enlace->query($ingarcfac);
      if (!$result){ echo "<br>Error al insertar registro archivo factura<br>".$campo;$errores+=1;} 
-  }  
+     }  
 ///////////////////////////////////////////////////////////////////////////////////
       echo "<br><hr> <div class='col-xs-12'>
         <div class='form-group'>
-          <strong><center>ARCHIVO IMPORTADO CON EXITO, EN TOTAL LOS REGISTROS Y $errores ERRORES</center></strong>
+          <strong><center>ARCHIVO IMPORTADO CON EXITO,  Y ".$errores." ERRORES</center></strong>
         </div>
       </div> 
       <br> ";  
-      echo "<meta http-equiv='refresh' content='4; url=index.php'>";
+      echo "<meta http-equiv='refresh' content='5; url=ListarFacturas.php'>";
 
 //Borramos el archivo que esta en el servidor con el prefijo cop_
 //si por algun motivo no cargo el archivo cop_ 
@@ -215,7 +214,7 @@ for($i=0; $i< count($_DATOS_EXCEL); $i++){
                 }/*ESTE VA PARA EL FILE EXIST.*/
                 else{
                     echo "<br>Primero debes cargar el archivo con extencion .xlisx<br>";
-                    echo "<meta http-equiv='refresh' content='4; url=index.php'>";
+                    echo "<meta http-equiv='refresh' content='5; url=CargaLibroExcel.php'>";
                 }
             } //ESTE VA PARA UPLOAD.
         ?>
