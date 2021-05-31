@@ -50,7 +50,7 @@ if (isset($_POST['action'])) {
 $action=$_POST['action'];
 }
 
-if (isset($action)== "upload"){
+if (isset($action) == "upload"){
 //SE CARGA EL ARCHIVO EXCEL
 $archivo = $_FILES['excel']['name'];
 $tipo = $_FILES['excel']['type'];
@@ -76,10 +76,9 @@ $filas = $objPHPExcel->setActiveSheetIndex(0)->getHighestRow();
 
 //Creamos un array con todos los datos del Excel importado
 $a=0;
-/*$fact_id=999;*/
-$fact_id=$lastvalue;
+
 for ($i=2;$i<=$filas;$i++){
-                        $_DATOS_EXCEL[$a]['FACT_ID'] = $fact_id;
+                        
                         $_DATOS_EXCEL[$a]['FACT_CODIGO'] = $objPHPExcel->getActiveSheet()->getCell('F'.$i)->getCalculatedValue();
                         $_DATOS_EXCEL[$a]['ESTF_CODIGO']= '3';
                         $_DATOS_EXCEL[$a]['TIPF_CODIGO'] = '1';
@@ -92,7 +91,7 @@ for ($i=2;$i<=$filas;$i++){
                         $_DATOS_EXCEL[$a]['ARCHF_NOMBRE'] = "FACT_".$_DATOS_EXCEL[$a]['FACT_CODIGO'].$_DATOS_EXCEL[$a]['FACT_FECHAING'].".pdf";
                         $_DATOS_EXCEL[$a]['ARCHF_USERNOM'] = "";
                         $_DATOS_EXCEL[$a]['ARCHF_FECHASUBIDA'] = $_DATOS_EXCEL[$a]['FACT_FECHAING'];
-                        echo "<br>".$_DATOS_EXCEL[$a]['ARCHF_NOMBRE']."<br>";
+                      //  echo "<br>".$_DATOS_EXCEL[$a]['ARCHF_NOMBRE']."<br>";
 //FECHA DE VENCIMIENTO   
                         $_DATOS_EXCEL[$a]['FECHA_PAGO_VENCIMIENTO']= date("Y-m-d", strtotime($_DATOS_EXCEL[$a]['FACT_FECHAING']."+ 1 month"));
                         ////////////////////////////////////////////////////////////////////////////
@@ -115,16 +114,23 @@ for ($i=2;$i<=$filas;$i++){
                         $_DATOS_EXCEL[$a]['FACT_COBRANZA'] = $_DATOS_EXCEL[$a]['FECHA_PAGO_VENCIMIENTO'];
           
                         $a++;
-                        $fact_id++;
+
                     }       
                     $errores=0;
                    /* var_dump($_DATOS_EXCEL); */
 
+$fact_id=$lastvalue;
+for($i=0; $i<count($_DATOS_EXCEL); $i++){
+  $numerofolio = $excelcarga->idverification($_DATOS_EXCEL[$i]['FACT_CODIGO']);
+  if($numerofolio == 1){
+    echo "<br>Ese folio NO esta registrado: ".$_DATOS_EXCEL[$i]['FACT_CODIGO']."<br>";
+    /*$fact_id=999;*/
+    $_DATOS_EXCEL[$i]['FACT_ID'] = $fact_id;
+
 //VARIABLE DE CAMPO                   
         $campo=0;     
 
-//SE CREAN LAS SENTENCIAS SQL DE SUBIDA DE FACTURAS.
-        for($i=0; $i< count($_DATOS_EXCEL); $i++){
+//SE CREAN LAS SENTENCIAS SQL DE SUBIDA DE FACTURAS
           $ingfac = "INSERT INTO `facturacion`(
           `FACT_ID`, 
           `FACT_CODIGO`, 
@@ -175,14 +181,16 @@ for ($i=2;$i<=$filas;$i++){
                   $ingfac.=$_DATOS_EXCEL[$i]['FACT_FORMPAG']."','";
                   $ingfac.=$_DATOS_EXCEL[$i]['FACT_COBRANZA']."')";
 
-                  echo "<br>".$ingfac."<br>";
+                //  echo "<br>".$ingfac."<br>";
                       
-             $result = $enlace->query($ingfac);
-             if (!$result){ echo "<br>Error al insertar registro factura<br>".$campo;$errores+=1;}  
-          }   
+           $result = $enlace->query($ingfac);
+             if (!$result){ echo "<div display='none'>
+              <script type='text/javascript'>
+                  console.log('<br>Error al insertar registro factura<br>');
+              </script>
+          </div>".$campo;$errores+=1;}     
 
 /////////////////////////////////////////////////////////////////////////////////////////////
-for($i=0; $i< count($_DATOS_EXCEL); $i++){
   $ingarcfac = "INSERT INTO `archivos_facturas`(
     `FACT_ID`, 
     `ARCHF_NOMBRE`, 
@@ -195,11 +203,19 @@ for($i=0; $i< count($_DATOS_EXCEL); $i++){
           $ingarcfac.=$_DATOS_EXCEL[$i]['ARCHF_USERNOM']."','";
           $ingarcfac.=$_DATOS_EXCEL[$i]['ARCHF_FECHASUBIDA']."')";
 
-          echo "<br>".$ingarcfac."<br>";
+        //  echo "<br>".$ingarcfac."<br>";
               
      $result = $enlace->query($ingarcfac);
-     if (!$result){ echo "<br>Error al insertar registro archivo factura<br>".$campo;$errores+=1;} 
-  }  
+     if (!$result){ echo "<div display='none'>
+      <script type='text/javascript'>
+          console.log('<br>Error al insertar archivo factura<br>');
+      </script></div>".$campo;$errores+=1;}   
+     
+     $fact_id++;
+
+    }
+  }
+   
 ///////////////////////////////////////////////////////////////////////////////////
       echo "<br><hr> <div class='col-xs-12'>
         <div class='form-group'>
@@ -218,4 +234,4 @@ for($i=0; $i< count($_DATOS_EXCEL); $i++){
                     echo "<meta http-equiv='refresh' content='4; url=index.php'>";
                 }
             } //ESTE VA PARA UPLOAD.
-        ?>
+?>

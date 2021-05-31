@@ -18,15 +18,37 @@ class excelcarga{
                                     );
                         $i++;
             } 
-                    mysqli_free_result($resultado);
                     mysqli_close($Con);
-                    $cotid=$data[0]['factura_id']+1;
-                    return $cotid;
+                    $factid=$data[0]['factura_id']+1;
+                    return $factid;
         }else {
             mysqli_close($Con);
-            $cotid = 1;
-            return $cotid;
+            $factid = 1;
+            return $factid;
            }
     } 
+
+    public function idverification($fact_codigo){
+        $this->CON =new Conexion();
+        $Con=$this->CON->conectar();
+        $sql = "SELECT FACT_CODIGO AS id FROM facturacion WHERE FACT_CODIGO='".$fact_codigo."';";
+        $resultado=mysqli_query($Con, $sql);
+       if (mysqli_num_rows($resultado)>0) {
+           $i=0;
+          while($row=mysqli_fetch_array($resultado)){
+           $data[$i]=array(
+                                   "factura_id"            =>$row["id"]
+                               );
+                   $i++;
+       } 
+               mysqli_close($Con);
+               $factid=$data[0]['factura_id'];
+               return $factid;
+   }else {
+       mysqli_close($Con);
+       $factid = 1;
+       return $factid;
+      }
+}
 }
 ?>
